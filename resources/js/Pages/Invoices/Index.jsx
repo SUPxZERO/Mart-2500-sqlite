@@ -129,24 +129,24 @@ export default function InvoicesIndex({ invoices, filters }) {
                             </div>
 
                             {period === 'range' && (
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                                     <div className="flex items-center gap-2 rounded-2xl border border-white/50 bg-white/60 px-3 py-1.5 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100">
                                         <Calendar className="h-4 w-4 text-slate-400" />
                                         <input
                                             type="date"
                                             value={from}
                                             onChange={(e) => setFrom(e.target.value)}
-                                            className="border-none bg-transparent p-0 text-sm focus:ring-0"
+                                            className="border-none bg-transparent p-0 text-sm focus:ring-0 w-full"
                                         />
                                     </div>
-                                    <span className="text-sm font-medium text-slate-400">to</span>
+                                    <span className="hidden sm:inline text-sm font-medium text-slate-400">to</span>
                                     <div className="flex items-center gap-2 rounded-2xl border border-white/50 bg-white/60 px-3 py-1.5 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100">
                                         <Calendar className="h-4 w-4 text-slate-400" />
                                         <input
                                             type="date"
                                             value={to}
                                             onChange={(e) => setTo(e.target.value)}
-                                            className="border-none bg-transparent p-0 text-sm focus:ring-0"
+                                            className="border-none bg-transparent p-0 text-sm focus:ring-0 w-full"
                                         />
                                     </div>
                                     <button
@@ -156,7 +156,8 @@ export default function InvoicesIndex({ invoices, filters }) {
                                         className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
                                     >
                                         <Filter className="h-4 w-4" />
-                                        Apply Range
+                                        <span className="sm:hidden">Apply</span>
+                                        <span className="hidden sm:inline">Apply Range</span>
                                     </button>
                                 </div>
                             )}
@@ -176,8 +177,9 @@ export default function InvoicesIndex({ invoices, filters }) {
         >
             <Head title={t('invoices.page_title')} />
 
-            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="hidden overflow-x-auto md:block">
+            {/* Desktop Table */}
+            <div className="hidden overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm md:block">
+                <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
                             <tr>
@@ -240,13 +242,15 @@ export default function InvoicesIndex({ invoices, filters }) {
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <div className="divide-y divide-slate-100 md:hidden">
-                    {invoices.data.map((invoice) => (
-                        <div
-                            key={invoice.id}
-                            className="p-5 transition-colors hover:bg-slate-50"
-                        >
+            {/* Mobile List */}
+            <div className="flex flex-col gap-4 md:hidden">
+                {invoices.data.map((invoice) => (
+                    <div
+                        key={invoice.id}
+                        className="rounded-3xl border border-slate-200 bg-white/70 backdrop-blur-md p-5 shadow-sm transition-all hover:shadow-md"
+                    >
                             <div className="flex items-start justify-between gap-4">
                                 <button
                                     type="button"
@@ -314,9 +318,8 @@ export default function InvoicesIndex({ invoices, filters }) {
                         <p className="text-sm">{t('invoices.no_invoices_hint')}</p>
                     </div>
                 )}
-            </div>
             
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-4">
                 <p className="font-mono text-sm text-slate-500">{t('invoices.showing_invoices', { count: invoices.data.length, total: invoices.total })}</p>
             </div>
 

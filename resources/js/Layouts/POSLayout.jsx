@@ -147,7 +147,7 @@ export default function POSLayout({
     return (
         <AppShell brand={t('app.brand')} navigation={navigation}>
             <PageBackground imageUrl={backgroundImage} />
-            <div className="flex flex-1 flex-col relative z-0 min-h-0">
+            <div className="flex flex-1 flex-col relative min-h-0 lg:overflow-hidden overflow-y-auto">
                 {(title || header) && (
                     <PageHeader
                         eyebrow={eyebrow}

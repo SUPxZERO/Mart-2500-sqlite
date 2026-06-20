@@ -2,12 +2,12 @@ import { useState, useMemo } from 'react';
 import axios from 'axios';
 import { t } from '@/i18n';
 import { useCartStore } from '@/store/useCartStore';
-import { Plus, Minus, Trash2, User, Pencil } from 'lucide-react';
+import { Plus, Minus, Trash2, User, Pencil, X } from 'lucide-react';
 import CustomerModal from './CustomerModal';
 import PaymentModal from './PaymentModal';
 import ReceiptModal from './ReceiptModal';
 
-export default function Cart({ customers, exchangeRate, paymentGateways }) {
+export default function Cart({ customers, exchangeRate, paymentGateways, onClose }) {
     // Use selective subscriptions instead of destructuring all at once
     const cart = useCartStore((state) => state.cart);
     const selectedCustomer = useCartStore((state) => state.selectedCustomer);
@@ -40,7 +40,17 @@ export default function Cart({ customers, exchangeRate, paymentGateways }) {
     return (
         <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-transparent">
             <div className="h-20 px-8 border-b border-white/50 flex items-center justify-between bg-transparent shrink-0 shadow-sm z-10">
-                <h2 className="text-xl font-bold text-slate-800">{t('pos.current_order')}</h2>
+                <div className="flex items-center gap-3">
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    )}
+                    <h2 className="text-xl font-bold text-slate-800">{t('pos.current_order')}</h2>
+                </div>
                 {cart.length > 0 && (
                     <button 
                         onClick={clearCart}

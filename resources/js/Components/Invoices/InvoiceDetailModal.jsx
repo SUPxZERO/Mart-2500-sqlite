@@ -93,13 +93,13 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoiceId }) {
 
     return (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div className="flex flex-col items-center max-h-[95vh] w-full max-w-md relative">
+            <div className="flex flex-col w-full max-w-md relative h-full max-h-[95vh] justify-center">
                 
                 {/* Close Button Header */}
-                <div className="absolute -top-12 right-0 flex gap-2 print:hidden">
+                <div className="flex justify-end w-full mb-3 shrink-0 print:hidden">
                     <button 
                         onClick={onClose}
-                        className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors backdrop-blur-md"
+                        className="p-2.5 bg-white/20 hover:bg-white/30 text-white rounded-full transition-colors backdrop-blur-md shadow-lg"
                     >
                         <X className="w-6 h-6" />
                     </button>

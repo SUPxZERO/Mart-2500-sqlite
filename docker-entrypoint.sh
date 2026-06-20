@@ -13,9 +13,9 @@ if [ "$APP_ENV" = "production" ]; then
     php artisan view:cache
 fi
 
-# Run migrations (Force is needed for production environments)
-# This will create tables in the Neon PostgreSQL database
-php artisan migrate --force
+# Run migrations and seed data (Force is needed for production environments)
+# This will create tables in the Neon PostgreSQL database and populate initial data
+php artisan migrate --force --seed
 
 # Execute the main container command (start Apache)
 exec apache2-foreground

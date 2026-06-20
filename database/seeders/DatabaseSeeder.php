@@ -85,7 +85,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260401-0001',
                 'customer_id' => 1, // Sokha
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(7),
                 'items' => [
                     ['item_name' => 'Coca Cola 330ml', 'qty' => 2, 'price' => 2500],
@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260402-0002',
                 'customer_id' => 1, // Sokha
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(6),
                 'items' => [
                     ['item_name' => 'Sting Energy Drink', 'qty' => 3, 'price' => 3000],
@@ -108,7 +108,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260403-0003',
                 'customer_id' => 1, // Sokha
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(5),
                 'items' => [
                     ['item_name' => 'Angkor Beer Can', 'qty' => 6, 'price' => 3000],
@@ -120,7 +120,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260404-0004',
                 'customer_id' => 2, // Dara
                 'payment_method' => 'card',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(4),
                 'items' => [
                     ['item_name' => 'Nescafe Iced Coffee', 'qty' => 2, 'price' => 3500],
@@ -131,7 +131,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260405-0005',
                 'customer_id' => 2, // Dara
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(3),
                 'items' => [
                     ['item_name' => 'MAMA Noodle Pork', 'qty' => 5, 'price' => 1500],
@@ -142,7 +142,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260406-0006',
                 'customer_id' => 2, // Dara
                 'payment_method' => 'card',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(2),
                 'items' => [
                     ['item_name' => 'Bacchus Energy', 'qty' => 2, 'price' => 3500],
@@ -154,7 +154,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260407-0007',
                 'customer_id' => 3, // Bopha
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now()->subDays(1),
                 'items' => [
                     ['item_name' => 'Marlboro Gold', 'qty' => 2, 'price' => 7000],
@@ -165,7 +165,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260408-0008',
                 'customer_id' => 3, // Bopha
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'ABC Stout Can', 'qty' => 3, 'price' => 6000],
@@ -176,7 +176,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260409-0009',
                 'customer_id' => 3, // Bopha
                 'payment_method' => 'card',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Sponsor Active', 'qty' => 4, 'price' => 3000],
@@ -188,7 +188,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260410-0010',
                 'customer_id' => 4, // Chetra
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Hanuman Beer Can', 'qty' => 4, 'price' => 3500],
@@ -199,7 +199,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260411-0011',
                 'customer_id' => 4, // Chetra
                 'payment_method' => 'card',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Esse Change', 'qty' => 1, 'price' => 6500],
@@ -210,7 +210,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260412-0012',
                 'customer_id' => 4, // Chetra
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Pepsi 330ml', 'qty' => 3, 'price' => 2500],
@@ -222,7 +222,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260413-0013',
                 'customer_id' => 5, // Vannak
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Sting Energy Drink', 'qty' => 2, 'price' => 3000],
@@ -233,7 +233,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260414-0014',
                 'customer_id' => 5, // Vannak
                 'payment_method' => 'card',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Coca Cola 330ml', 'qty' => 1, 'price' => 2500],
@@ -245,7 +245,7 @@ class DatabaseSeeder extends Seeder
                 'invoice_number' => 'INV-20260415-0015',
                 'customer_id' => 5, // Vannak
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'Completed',
                 'created_at' => now(),
                 'items' => [
                     ['item_name' => 'Angkor Beer Can', 'qty' => 5, 'price' => 3000],

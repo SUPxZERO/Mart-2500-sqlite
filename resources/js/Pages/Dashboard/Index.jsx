@@ -22,15 +22,15 @@ function StatCard({ icon, label, value, sub, color = 'slate' }) {
     };
 
     return (
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl ${colorMap[color]}`}>
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow min-w-0">
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+                <div className={`p-2 sm:p-3 rounded-xl ${colorMap[color]}`}>
                     {icon}
                 </div>
             </div>
-            <p className="text-3xl font-black text-slate-800 tracking-tight truncate">{value}</p>
-            <p className="text-sm font-semibold text-slate-500 mt-1">{label}</p>
-            {sub && <p className="text-xs text-slate-400 mt-2">{sub}</p>}
+            <p className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight truncate">{value}</p>
+            <p className="text-xs sm:text-sm font-semibold text-slate-500 mt-1 truncate">{label}</p>
+            {sub && <p className="text-[10px] sm:text-xs text-slate-400 mt-1 sm:mt-2">{sub}</p>}
         </div>
     );
 }
@@ -55,11 +55,11 @@ export default function DashboardIndex({
             <Head title={t('dashboard.page_title')} />
 
             <section className="shrink-0">
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                         {range === 'today' ? "Today's Performance" : range === 'month' ? "This Month's Performance" : "This Year's Performance"}
                     </h2>
-                    <div className="flex bg-slate-100 rounded-xl p-1">
+                    <div className="flex w-full sm:w-auto overflow-x-auto bg-slate-100 rounded-xl p-1 hide-scrollbar">
                         <button 
                             onClick={() => handleRangeChange('today')}
                             className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${range === 'today' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
@@ -81,7 +81,7 @@ export default function DashboardIndex({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                     <StatCard 
                         icon={<Banknote className="w-6 h-6" />} 
                         label={t('dashboard.revenue_completed')} 
@@ -119,37 +119,42 @@ export default function DashboardIndex({
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3 shrink-0">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
-                    <h3 className="mb-1 font-bold text-slate-700">{t('dashboard.revenue_trend')}</h3>
-                    <p className="mb-4 text-xs text-slate-400">{t('dashboard.revenue_trend_description')}</p>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <BarChart data={revenueTrend} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                            <XAxis dataKey="date" tick={{ fill: '#94A3B8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                            <YAxis hide />
-                            <Tooltip 
-                                cursor={{ fill: '#F1F5F9' }}
-                                contentStyle={{ border: 'none', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
-                                formatter={(v) => [`${formatMoney(v)} KHR`, t('dashboard.revenue')]}
-                            />
-                            <Bar dataKey="total" fill="#10B981" radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3 shrink-0">
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm xl:col-span-2 min-w-0 overflow-hidden">
+                    <h3 className="mb-1 font-bold text-slate-700 truncate">{t('dashboard.revenue_trend')}</h3>
+                    <p className="mb-4 text-xs text-slate-400 truncate">{t('dashboard.revenue_trend_description')}</p>
+                    <div className="w-full overflow-x-auto hide-scrollbar">
+                        <div className="min-w-[400px]">
+                            <ResponsiveContainer width="100%" height={220}>
+                                <BarChart data={revenueTrend} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                                    <XAxis dataKey="date" tick={{ fill: '#94A3B8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                    <YAxis hide />
+                                    <Tooltip 
+                                        cursor={{ fill: '#F1F5F9' }}
+                                        contentStyle={{ border: 'none', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+                                        formatter={(v) => [`${formatMoney(v)} KHR`, t('dashboard.revenue')]}
+                                    />
+                                    <Bar dataKey="total" fill="#10B981" radius={[8, 8, 0, 0]} maxBarSize={40} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="mb-1 font-bold text-slate-700">{t('dashboard.payment_methods')}</h3>
-                    <p className="mb-4 text-xs text-slate-400">{t('dashboard.payment_methods_description')}</p>
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm min-w-0 overflow-hidden">
+                    <h3 className="mb-1 font-bold text-slate-700 truncate">{t('dashboard.payment_methods')}</h3>
+                    <p className="mb-4 text-xs text-slate-400 truncate">{t('dashboard.payment_methods_description')}</p>
                     {paymentBreakdown.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={220}>
-                            <PieChart>
-                                <Pie 
-                                    data={paymentBreakdown} 
-                                    cx="50%" cy="50%" 
-                                    innerRadius={60} outerRadius={90} 
-                                    paddingAngle={4} 
-                                    dataKey="value"
-                                >
+                        <div className="w-full flex justify-center">
+                            <ResponsiveContainer width="100%" height={220}>
+                                <PieChart>
+                                    <Pie 
+                                        data={paymentBreakdown} 
+                                        cx="50%" cy="50%" 
+                                        innerRadius={60} outerRadius={80} 
+                                        paddingAngle={4} 
+                                        dataKey="value"
+                                    >
                                     {paymentBreakdown.map((_, index) => (
                                         <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                                     ))}
@@ -161,26 +166,27 @@ export default function DashboardIndex({
                                 />                                        
                             </PieChart>
                         </ResponsiveContainer>
+                        </div>
                     ) : (
                         <div className="flex h-[220px] items-center justify-center font-medium text-slate-300">{t('dashboard.no_data_yet')}</div>
                     )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 shrink-0">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="mb-1 flex items-center gap-2 font-bold text-slate-700">
-                        <Package className="w-4 h-4 text-indigo-400" />
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 shrink-0">
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm min-w-0">
+                    <h3 className="mb-1 flex items-center gap-2 font-bold text-slate-700 truncate">
+                        <Package className="w-4 h-4 text-indigo-400 shrink-0" />
                         {t('dashboard.top_items')}
                     </h3>
-                    <p className="mb-4 text-xs text-slate-400">{t('dashboard.top_items_description')}</p>
+                    <p className="mb-4 text-xs text-slate-400 truncate">{t('dashboard.top_items_description')}</p>
                     {topItems.length > 0 ? (
-                        <ul className="space-y-3">
+                        <ul className="space-y-4">
                             {topItems.map((item, i) => (
-                                <li key={i} className="flex items-center justify-between">
-                                    <div className="flex min-w-0 items-center gap-3">
+                                <li key={i} className="flex items-center justify-between gap-3">
+                                    <div className="flex min-w-0 flex-1 items-center gap-3">
                                         <div
-                                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
                                             style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                                         >
                                             {i + 1}
@@ -199,27 +205,27 @@ export default function DashboardIndex({
                     )}
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="mb-1 flex items-center gap-2 font-bold text-slate-700">
-                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm min-w-0">
+                    <h3 className="mb-1 flex items-center gap-2 font-bold text-slate-700 truncate">
+                        <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
                         {t('dashboard.debt_summary')}
                     </h3>
-                    <p className="mb-6 text-xs text-slate-400">{t('dashboard.debt_summary_description')}</p>
+                    <p className="mb-6 text-xs text-slate-400 truncate">{t('dashboard.debt_summary_description')}</p>
                     
                     <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-rose-50 p-5">
-                            <div>
-                                <p className="text-xs font-bold uppercase tracking-wider text-rose-400">{t('dashboard.total_owed')}</p>
-                                <p className="mt-1 text-3xl font-black text-rose-600">{formatMoney(totalDebt)} <span className="text-base font-bold">KHR</span></p>
+                        <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-rose-50 p-4 sm:p-5">
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-400 truncate">{t('dashboard.total_owed')}</p>
+                                <p className="mt-1 text-2xl sm:text-3xl font-black text-rose-600 truncate">{formatMoney(totalDebt)} <span className="text-sm sm:text-base font-bold">KHR</span></p>
                             </div>
                         </div>
-                        <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-5">
-                            <div>
-                                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('dashboard.customers_in_debt')}</p>
-                                <p className="mt-1 text-3xl font-black text-slate-700">{customersInDebt}</p>
+                        <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:p-5">
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 truncate">{t('dashboard.customers_in_debt')}</p>
+                                <p className="mt-1 text-2xl sm:text-3xl font-black text-slate-700 truncate">{customersInDebt}</p>
                             </div>
-                            <div className="text-slate-300">
-                                <Users className="w-10 h-10" />
+                            <div className="text-slate-300 shrink-0 ml-2">
+                                <Users className="w-8 h-8 sm:w-10 sm:h-10" />
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Head } from '@inertiajs/react';
+import { ShoppingCart } from 'lucide-react';
 import POSLayout from '@/Layouts/POSLayout';
 import ItemCard from '@/Components/POS/ItemCard';
 import SearchBar from '@/Components/POS/SearchBar';
@@ -10,6 +11,8 @@ import { useCartStore } from '@/store/useCartStore';
 export default function POSIndex({ items, customers, exchange_rate, payment_gateways }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+    const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
+    
     // Use selective subscriptions instead of destructuring all at once
     const addItem = useCartStore((state) => state.addItem);
     const cart = useCartStore((state) => state.cart);
@@ -182,9 +185,32 @@ export default function POSIndex({ items, customers, exchange_rate, payment_gate
                     </div>
                 </div>
 
+                {/* Mobile Floating Action Button (FAB) for Cart */}
+                {!isMobileCartOpen && (
+                    <button
+                        onClick={() => setIsMobileCartOpen(true)}
+                        className="fixed bottom-6 right-6 z-40 flex h-16 items-center gap-3 rounded-full bg-slate-900 px-6 font-bold text-white shadow-2xl transition hover:bg-slate-800 hover:scale-105 lg:hidden"
+                    >
+                        <div className="relative">
+                            <ShoppingCart className="h-6 w-6" />
+                            {cart.length > 0 && (
+                                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] text-white">
+                                    {cart.length}
+                                </span>
+                            )}
+                        </div>
+                        View Cart
+                    </button>
+                )}
+
                 {/* Right Side: Active Cart Drawer/Pane */}
-                <div className="z-20 flex min-h-0 w-full shrink-0 flex-col border-l border-white/50 bg-white/60 backdrop-blur-md shadow-xl lg:w-[26rem] lg:shadow-none">
-                    <Cart customers={customers} exchangeRate={exchange_rate} paymentGateways={payment_gateways} />
+                <div className={`z-50 lg:z-20 flex min-h-0 w-full shrink-0 flex-col border-l border-white/50 bg-white/80 lg:bg-white/60 backdrop-blur-xl lg:backdrop-blur-md shadow-2xl lg:shadow-none lg:w-[26rem] fixed inset-0 lg:static transition-transform duration-300 ${isMobileCartOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}`}>
+                    <Cart 
+                        customers={customers} 
+                        exchangeRate={exchange_rate} 
+                        paymentGateways={payment_gateways} 
+                        onClose={() => setIsMobileCartOpen(false)}
+                    />
                 </div>
 
             </div>

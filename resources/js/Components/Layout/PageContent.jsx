@@ -17,10 +17,10 @@ export default function PageContent({
               : 'max-w-none';
 
     return (
-        <div className={`flex-1 flex flex-col min-h-0 ${scrollable ? 'overflow-y-auto' : 'overflow-hidden'}`}>
+        <div className={`flex-1 flex flex-col lg:min-h-0 ${scrollable ? 'lg:overflow-y-auto overflow-visible' : 'overflow-hidden'}`}>
             <div
                 className={joinClasses(
-                    'mx-auto w-full flex-1 flex flex-col min-h-0',
+                    'mx-auto w-full flex-1 flex flex-col lg:min-h-0',
                     widthClass,
                     padded && 'px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
                     className,
