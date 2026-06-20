@@ -197,7 +197,6 @@ class SettingsController extends Controller
      */
     public function downloadBackup()
     {
-        $dbPath = database_path('database.sqlite');
         $zipFile = storage_path('app/mart2500-backup-' . now()->format('Y-m-d_H-i-s') . '.zip');
         
         $zip = new \ZipArchive();
@@ -206,10 +205,27 @@ class SettingsController extends Controller
             abort(500, 'Could not create backup zip file.');
         }
 
-        // Add Database
-        if (file_exists($dbPath)) {
-            $zip->addFile($dbPath, 'database.sqlite');
+        // Export Database to JSON for cross-database compatibility (SQLite, PostgreSQL, MySQL)
+        $tables = [
+            'users',
+            'categories',
+            'items',
+            'customers',
+            'invoices',
+            'invoice_items',
+            'payments',
+            'exchange_rates',
+            'payment_gateways'
+        ];
+
+        $databaseExport = [];
+        foreach ($tables as $table) {
+            $databaseExport[$table] = \Illuminate\Support\Facades\DB::table($table)->get()->map(function ($item) {
+                return (array) $item;
+            })->toArray();
         }
+
+        $zip->addFromString('database.json', json_encode($databaseExport));
 
         // Add Public Storage (Images)
         $publicPath = storage_path('app/public');
@@ -252,25 +268,147 @@ class SettingsController extends Controller
         $zip = new \ZipArchive();
         if ($zip->open($file->getRealPath()) === TRUE) {
             
-            if ($zip->locateName('database.sqlite') === false) {
+            $hasJson = $zip->locateName('database.json') !== false;
+            $hasSqlite = $zip->locateName('database.sqlite') !== false;
+
+            if (!$hasJson && !$hasSqlite) {
                 $zip->close();
-                return back()->withErrors(['database' => 'Invalid backup file: missing database.sqlite.']);
+                return back()->withErrors(['database' => 'Invalid backup file: missing database.json or database.sqlite.']);
             }
 
-            $dbPath = database_path('database.sqlite');
+            // Define tables in dependency order (parents first for insertion, but we will delete in reverse order)
+            $tables = [
+                'users',
+                'categories',
+                'customers',
+                'items',
+                'invoices',
+                'invoice_items',
+                'payments',
+                'exchange_rates',
+                'payment_gateways'
+            ];
 
-            // Create backup of current db just in case
-            if (file_exists($dbPath)) {
-                copy($dbPath, database_path('database_backup_before_restore_' . time() . '.sqlite'));
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            try {
+                // Determine if we need to cast booleans explicitly (important for strictly typed DBs like Postgres)
+                $isPostgres = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql';
+                $tableBoolColumns = [];
+
+                if ($isPostgres) {
+                    foreach ($tables as $table) {
+                        $columns = \Illuminate\Support\Facades\Schema::getColumns($table);
+                        $boolCols = [];
+                        foreach ($columns as $column) {
+                            $type = strtolower($column['type_name'] ?? $column['type'] ?? '');
+                            if ($type === 'boolean' || $type === 'bool') {
+                                $boolCols[] = $column['name'];
+                            }
+                        }
+                        $tableBoolColumns[$table] = $boolCols;
+                    }
+                }
+
+                // Delete existing records in reverse order to respect foreign keys
+                foreach (array_reverse($tables) as $table) {
+                    \Illuminate\Support\Facades\DB::table($table)->delete();
+                }
+
+                // Restore from JSON (New Backup Format)
+                if ($hasJson) {
+                    $jsonContent = $zip->getFromName('database.json');
+                    $databaseImport = json_decode($jsonContent, true);
+
+                    foreach ($tables as $table) {
+                        if (isset($databaseImport[$table]) && count($databaseImport[$table]) > 0) {
+                            $records = $databaseImport[$table];
+                            
+                            // Type casting for Postgres
+                            if ($isPostgres && !empty($tableBoolColumns[$table])) {
+                                foreach ($records as &$row) {
+                                    foreach ($tableBoolColumns[$table] as $col) {
+                                        if (array_key_exists($col, $row)) {
+                                            $row[$col] = (bool) $row[$col];
+                                        }
+                                    }
+                                }
+                            }
+
+                            $chunks = array_chunk($records, 500);
+                            foreach ($chunks as $chunk) {
+                                \Illuminate\Support\Facades\DB::table($table)->insert($chunk);
+                            }
+                        }
+                    }
+                } 
+                // Restore from SQLite (Backwards Compatibility for Old Backups)
+                elseif ($hasSqlite) {
+                    $tempSqlitePath = storage_path('app/temp_restore_database_' . time() . '.sqlite');
+                    file_put_contents($tempSqlitePath, $zip->getFromName('database.sqlite'));
+
+                    config(['database.connections.backup_sqlite' => [
+                        'driver' => 'sqlite',
+                        'database' => $tempSqlitePath,
+                        'prefix' => '',
+                        'foreign_key_constraints' => false,
+                    ]]);
+
+                    foreach ($tables as $table) {
+                        $records = \Illuminate\Support\Facades\DB::connection('backup_sqlite')->table($table)->get()->map(function ($item) {
+                            return (array) $item;
+                        })->toArray();
+
+                        if (count($records) > 0) {
+                            // Type casting for Postgres
+                            if ($isPostgres && !empty($tableBoolColumns[$table])) {
+                                foreach ($records as &$row) {
+                                    foreach ($tableBoolColumns[$table] as $col) {
+                                        if (array_key_exists($col, $row)) {
+                                            $row[$col] = (bool) $row[$col];
+                                        }
+                                    }
+                                }
+                            }
+
+                            $chunks = array_chunk($records, 500);
+                            foreach ($chunks as $chunk) {
+                                \Illuminate\Support\Facades\DB::table($table)->insert($chunk);
+                            }
+                        }
+                    }
+
+                    if (file_exists($tempSqlitePath)) {
+                        unlink($tempSqlitePath);
+                    }
+                }
+
+                // Reset auto-increment sequences for PostgreSQL so future inserts don't fail
+                if ($isPostgres) {
+                    foreach ($tables as $table) {
+                        $seqObj = \Illuminate\Support\Facades\DB::selectOne("SELECT pg_get_serial_sequence('{$table}', 'id') AS seq");
+                        if ($seqObj && $seqObj->seq) {
+                            $maxId = \Illuminate\Support\Facades\DB::table($table)->max('id') ?? 0;
+                            if ($maxId > 0) {
+                                \Illuminate\Support\Facades\DB::statement("SELECT setval('{$seqObj->seq}', {$maxId})");
+                            }
+                        }
+                    }
+                }
+
+                \Illuminate\Support\Facades\DB::commit();
+
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\DB::rollBack();
+                $zip->close();
+                return back()->withErrors(['database' => 'Database restore failed: ' . $e->getMessage()]);
             }
 
-            // Extract specific files
+            // Extract public images
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $filename = $zip->getNameIndex($i);
                 
-                if ($filename === 'database.sqlite') {
-                    $zip->extractTo(database_path(), array('database.sqlite'));
-                } elseif (str_starts_with($filename, 'public/')) {
+                if (str_starts_with($filename, 'public/')) {
                     $zip->extractTo(storage_path('app'), array($filename));
                 }
             }
