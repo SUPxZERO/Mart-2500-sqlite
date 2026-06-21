@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { t } from '@/i18n';
 import { X, Banknote, Landmark, UserX, QrCode, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
@@ -129,11 +130,19 @@ export default function PaymentModal({
         });
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-            <div className="flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200">
-                <div className="flex w-[45%] flex-col border-r border-slate-100 bg-slate-50">
-                    <div className="border-b border-slate-100 p-6">
+    const modalContent = (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+            <div className="relative flex max-h-[95vh] md:max-h-[90vh] w-full max-w-5xl flex-col md:flex-row overflow-y-auto overflow-x-hidden md:overflow-hidden rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200">
+                {/* Mobile Close Button */}
+                <button
+                    onClick={onClose}
+                    className="absolute right-4 top-4 z-10 rounded-full bg-slate-100 p-2 text-slate-500 transition-colors hover:bg-slate-200 hover:text-rose-500 md:hidden"
+                >
+                    <X className="h-5 w-5" />
+                </button>
+
+                <div className="flex w-full md:w-[40%] lg:w-[35%] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50">
+                    <div className="border-b border-slate-100 p-6 pr-14 md:pr-6 shrink-0">
                         <h3 className="text-xl font-bold text-slate-800">
                             {t('pos.checkout')}
                         </h3>
@@ -142,7 +151,7 @@ export default function PaymentModal({
                         </p>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-6">
+                    <div className="flex-1 p-6 md:overflow-y-auto">
                         <div className="mb-6 rounded-2xl border border-emerald-100 bg-white p-6 text-center shadow-sm shadow-emerald-500/10">
                             <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-slate-500">
                                 {t('pos.total_due')}
@@ -216,8 +225,8 @@ export default function PaymentModal({
                     </div>
                 </div>
 
-                <div className="flex w-[60%] min-h-0 flex-col bg-white">
-                    <div className="flex justify-end p-4">
+                <div className="flex w-full flex-col bg-white md:w-auto md:min-w-0 md:flex-1">
+                    <div className="hidden shrink-0 justify-end p-4 md:flex">
                         <button
                             onClick={onClose}
                             className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-rose-500"
@@ -226,7 +235,7 @@ export default function PaymentModal({
                         </button>
                     </div>
 
-                    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-8 pb-8">
+                    <div className="flex flex-col p-6 pt-0 md:min-h-0 md:flex-1 md:overflow-y-auto md:overflow-x-hidden md:px-8 md:pb-6">
                         {paymentMethod === 'Cash' && (
                             <div className="animate-in slide-in-from-right-4 space-y-6 duration-300">
                                 <div>
@@ -234,7 +243,7 @@ export default function PaymentModal({
                                         <label className="block text-sm font-bold text-slate-700">
                                             Cash Received ({cashCurrency})
                                         </label>
-                                        <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                                        <div className="inline-flex shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-1">
                                             {['KHR', 'USD'].map((currency) => (
                                                 <button
                                                     key={currency}
@@ -282,7 +291,7 @@ export default function PaymentModal({
                                         )}
                                     </div>
 
-                                    <div className="mt-3 flex gap-2">
+                                    <div className="mt-3 flex flex-wrap gap-2">
                                         {(cashCurrency === 'USD'
                                             ? [totalUsd, 5, 10, 20, 50, 100]
                                             : [total, 10000, 20000, 50000, 100000]
@@ -305,7 +314,7 @@ export default function PaymentModal({
                                                                 : amount.toString(),
                                                         )
                                                     }
-                                                    className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-200"
+                                                    className="flex-1 whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-200"
                                                 >
                                                     {cashCurrency === 'USD'
                                                         ? formatUsd(amount)
@@ -344,7 +353,7 @@ export default function PaymentModal({
                         )}
 
                         {paymentMethod === 'Provider' && (
-                            <div className="animate-in zoom-in-95 flex min-h-0 flex-1 flex-col space-y-5 duration-300">
+                            <div className="animate-in zoom-in-95 flex flex-col space-y-5 duration-300">
                                 <div>
                                     <p className="mb-3 text-sm font-bold uppercase tracking-wider text-slate-500">
                                         Choose Provider
@@ -374,7 +383,7 @@ export default function PaymentModal({
                                 </div>
 
                                 {selectedGateway && (
-                                    <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                    <div className="flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                         <div className="mb-4 flex items-start justify-between gap-4">
                                             <div>
                                                 <h4 className="text-xl font-bold text-slate-800">
@@ -390,7 +399,7 @@ export default function PaymentModal({
                                         </div>
 
                                         {selectedGateway.supports_khqr && khqrPreview?.ok && khqrPayload && (
-                                            <div className="flex min-h-0 flex-1 flex-col rounded-2xl bg-white p-4 text-center">
+                                            <div className="flex flex-col rounded-2xl bg-white p-4 text-center">
                                                 <div className="mb-4 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
                                                     <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
                                                         Amount
@@ -405,7 +414,7 @@ export default function PaymentModal({
                                                     )}
                                                 </div>
 
-                                                <div className="flex min-h-96 flex-1 items-center justify-center rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                                <div className="flex items-center justify-center rounded-2xl border border-slate-100 p-6 shadow-sm">
                                                     <QRCodeSVG
                                                         value={khqrPayload}
                                                         size={320}
@@ -524,35 +533,41 @@ export default function PaymentModal({
                                 </div>
                             </div>
                         )}
+                    </div>
 
-                        <div className="mt-auto pt-6">
-                            <button
-                                onClick={handleConfirm}
-                                disabled={
-                                    !paymentMethod ||
-                                    !canConfirmProviderPayment ||
-                                    (paymentMethod === 'Cash' && receivedKhr < total)
-                                }
-                                className={`w-full rounded-xl py-5 text-xl font-bold shadow-lg transition-all ${
-                                    paymentMethod === 'Unpaid_Debt'
-                                        ? 'bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600'
-                                        : !paymentMethod ||
-                                            !canConfirmProviderPayment ||
-                                            (paymentMethod === 'Cash' && receivedKhr < total)
-                                          ? 'cursor-not-allowed bg-slate-300 text-slate-500 shadow-none'
-                                          : 'bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600 active:scale-[0.98]'
-                                }`}
-                            >
-                                {paymentMethod === 'Provider' && selectedGateway
-                                    ? `Confirm ${selectedGateway.display_name} Payment`
-                                    : t('actions.confirm_order')}
-                            </button>
-                        </div>
+                    <div className="shrink-0 border-t border-slate-100 bg-white p-6 md:px-8">
+                        <button
+                            onClick={handleConfirm}
+                            disabled={
+                                !paymentMethod ||
+                                !canConfirmProviderPayment ||
+                                (paymentMethod === 'Cash' && receivedKhr < total)
+                            }
+                            className={`w-full rounded-xl py-5 text-xl font-bold shadow-lg transition-all ${
+                                paymentMethod === 'Unpaid_Debt'
+                                    ? 'bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600'
+                                    : !paymentMethod ||
+                                        !canConfirmProviderPayment ||
+                                        (paymentMethod === 'Cash' && receivedKhr < total)
+                                      ? 'cursor-not-allowed bg-slate-300 text-slate-500 shadow-none'
+                                      : 'bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600 active:scale-[0.98]'
+                            }`}
+                        >
+                            {paymentMethod === 'Provider' && selectedGateway
+                                ? `Confirm ${selectedGateway.display_name} Payment`
+                                : t('actions.confirm_order')}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     );
+
+    if (typeof document !== 'undefined') {
+        return createPortal(modalContent, document.body);
+    }
+
+    return modalContent;
 }
 
 function PaymentOption({ icon, title, subtitle, active, onClick }) {

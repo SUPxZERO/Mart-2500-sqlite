@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
 import { X, HandCoins, Banknote, QrCode } from 'lucide-react';
 
@@ -75,8 +76,8 @@ export default function ReceivePaymentModal({ isOpen, onClose, customer, exchang
         });
     };
 
-    return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    const modalContent = (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-2xl">
                     <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -179,4 +180,10 @@ export default function ReceivePaymentModal({ isOpen, onClose, customer, exchang
             </div>
         </div>
     );
+
+    if (typeof document !== 'undefined') {
+        return createPortal(modalContent, document.body);
+    }
+
+    return modalContent;
 }

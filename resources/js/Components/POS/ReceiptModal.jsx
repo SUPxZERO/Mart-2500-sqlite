@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Printer, CheckCircle2 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 
@@ -51,8 +52,8 @@ export default function ReceiptModal({ isOpen, onClose, paymentData }) {
         // In Sprint 5, we will route this to NativePHP's direct printing API
     };
 
-    return (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    const modalContent = (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
             <div className="flex flex-col items-center max-h-[95vh] w-full max-w-md animate-in fade-in zoom-in-95 duration-200">
                 
                 {/* Success Indicator */}
@@ -151,4 +152,6 @@ export default function ReceiptModal({ isOpen, onClose, paymentData }) {
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 }

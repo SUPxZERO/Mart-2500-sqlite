@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { t } from '@/i18n';
 import { Search, X, User, Plus, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
@@ -97,8 +98,8 @@ export default function CustomerModal({ isOpen, onClose, customers }) {
 
     const formatMoney = (amount) => new Intl.NumberFormat('en-US').format(amount);
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    const modalContent = (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -274,4 +275,10 @@ export default function CustomerModal({ isOpen, onClose, customers }) {
             </div>
         </div>
     );
+
+    if (typeof document !== 'undefined') {
+        return createPortal(modalContent, document.body);
+    }
+
+    return modalContent;
 }
